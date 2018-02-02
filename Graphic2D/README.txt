@@ -1,0 +1,1 @@
+Simple graphic editor which allows you to draw shapes as rectangle, circle or polygon. It is possible to resize shapes, move them around and change their colors. You can also save the state of the program.
