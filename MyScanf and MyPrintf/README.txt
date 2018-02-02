@@ -1,0 +1,1 @@
+My own implementation of printf, scanf functions from standrd io library of C.

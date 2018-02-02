@@ -1,0 +1,1 @@
+Linux bash scripts which read information from /proc/loadavg and /proc/diskstats and showing usage in graphic way. You can check usage for last 60 seconds, refreshed every second.

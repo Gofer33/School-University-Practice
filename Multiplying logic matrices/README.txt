@@ -1,0 +1,1 @@
+Simple multithreaded program which can multiply two binary matrices. Each thread can handle it's own row. You can adjust size of matrices and number of threads.

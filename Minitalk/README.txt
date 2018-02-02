@@ -1,0 +1,1 @@
+Simple client-server socket based communicator in C without using threads, but instead linux system calls such as select etc. Enter you nick and then write message "[receivernick]message".

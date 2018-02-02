@@ -1,0 +1,64 @@
+#!/bin/bash
+cat "" > log.txt;
+
+value='';
+max=0;
+declare -a array;
+counter1=0;
+valval=0;
+shift=1;
+
+clear;
+
+for i in {0..10}
+	do
+	echo "............................................................";
+done
+
+while [ 1 ]
+do
+	tput cup 0 0;
+	
+	valuetemp=`cat /proc/loadavg | awk '{print$1}'`;
+	value=$(awk "BEGIN {printf \"%.2f\",${valuetemp}*100}")
+	
+	echo "$value" >> log.txt;
+		
+		max=$(tac log.txt | head -n 60 | tail -n 60 | sort -rn | head -n 1);
+		maxtemp=$(awk "BEGIN {printf \"%.2f\",${max}/100}")
+		
+		if (( $(echo "$max == 0" | bc -l) ))
+			then 
+			max=1;
+		fi
+			
+		valval=$(awk "BEGIN { pc=10*${value}/${max}; i=int(pc); print (pc-i<0.5)?i:i+1 }");
+		
+		array[$counter1]="$valval";
+		if [ $counter1 -ge 61 ]
+			then
+			shift=$[shift+1];
+		fi
+			
+		for j in {0..10}
+			do
+			for (( i = counter1 ; i >= shift ; i--))
+				do
+				if [ ${array[$i]} -gt $((9-j)) ]
+					then
+					echo -n "|"
+				else
+					echo -n '.';
+				fi
+				done
+			echo '';
+			done
+		counter1=$[counter1+1];
+		echo "1   5   10   15   20   25   30   35   40   45   50   55   60";
+		echo -n "Actual system load: $valuetemp";
+		
+	
+	tput cup 0 60;
+	echo -n "$maxtemp";
+	sleep 1;
+done

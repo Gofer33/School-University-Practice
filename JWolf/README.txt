@@ -1,0 +1,1 @@
+Simple multithreaded simulation. Each thread is one of the animals such as wolf or a hare. Wolf tries to catch hare chosing the one which is the closest. Simulation is working until Wolf eats all of the Hares. You can adjust parameters as size of the world, number of hares, and time between moves of animals.

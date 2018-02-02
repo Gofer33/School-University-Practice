@@ -1,0 +1,1 @@
+My implementation of linux shell in C. You can open programs like cd, rm, ls in same way like in bash. You can also use multiple pipes to redirect output and input of programs or you can use standard redirections as >, <, 2>.

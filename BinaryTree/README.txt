@@ -1,0 +1,1 @@
+Client-Server architecture program which allows you to create Binary Search Tree and present it in simple graphic form. Server can remember up to three trees, one of each type. There are three kinds of variable types such as Integer, Double, String. You can insert, delete and search for a node.

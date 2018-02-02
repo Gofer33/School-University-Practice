@@ -1,0 +1,180 @@
+#!/bin/bash
+cat "" > logRead.txt;
+cat "" > logWrite.txt;
+speedLoad=0;
+speedWrite=0;
+oldValueRead='';
+newValueRead='';
+oldValueWrite='';
+newValueWrite='';
+maxRead=0;
+maxWrite=0;
+flag=false;
+declare -a arrayRead;
+declare -a arrayWrite;
+counter1=0;
+counter2=0;
+valRead=0;
+shift=1;
+shift2=1;
+
+clear;
+
+for i in {0..10}
+	do
+	echo "............................................................";
+done
+
+printf '\n\n\n\n';
+
+for i in {0..10}
+	do
+	echo "............................................................";
+done
+
+while [ 1 ]
+do
+	tput cup 0 0;
+	
+	oldValueRead="$newValueRead";
+	oldValueWrite="$newValueWrite";
+	
+	newValueRead=`cat /proc/diskstats | grep -m1 'sda' | awk '{print$6}'`;
+	newValueWrite=`cat /proc/diskstats | grep -m1 'sda' | awk '{print$10}'`;
+	
+	if [ "$flag" = true ]
+		then 
+		
+		speedRead=$((((newValueRead-oldValueRead)*512)));
+		speedWrite=$((((newValueWrite-oldValueWrite)*512)));
+		
+		echo "$speedRead" >> logRead.txt;
+		echo "$speedWrite" >> logWrite.txt;
+		
+		maxRead=$(cat logRead.txt | tail -n 60 | sort -rn | head -n 1);	
+		maxWrite=$(tac logWrite.txt | head -n 60 | tail -n 60 | sort -rn | head -n 1);
+		
+		if [ $maxRead -eq 0 ]
+			then 
+			maxRead=1;
+		fi
+		
+		if [ $maxWrite -eq 0 ]
+			then 
+			maxWrite=1;
+		fi
+			
+		valRead=$(awk "BEGIN { pc=10*${speedRead}/${maxRead}; i=int(pc); print (pc-i<0.5)?i:i+1 }");
+		valWrite=$(awk "BEGIN { pc=10*${speedWrite}/${maxWrite}; i=int(pc); print (pc-i<0.5)?i:i+1 }");
+		
+		arrayRead[$counter1]="$valRead";
+		arrayWrite[$counter2]="$valWrite";
+		
+		if [ $counter1 -ge 61 ]
+			then
+			shift=$[shift+1];
+		fi
+		
+		if [ $counter2 -ge 61 ]
+			then
+			shift2=$[shift2+1];
+		fi
+			
+		for j in {0..10}
+			do
+			for (( i = counter1 ; i >= shift ; i--))
+				do
+				if [ ${arrayRead[$i]} -gt $((9-j)) ]
+					then
+					echo -n "|"
+				else
+					echo -n '.';
+				fi
+				done
+			echo '';
+			done
+		counter1=$[counter1+1];
+		echo "1   5   10   15   20   25   30   35   40   45   50   55   60";
+		echo -n "Actual read speed: ";
+		
+		actualRead=$(tac logRead.txt | head -n 60 | tail -n 60 | head -n 1);
+		
+	    if [ $actualRead -ge 1024 ] && [ $actualRead -lt 1048576 ]
+			then
+			echo -n $((actualRead/1024));
+			echo -n " KB/s                ";
+			elif [ $actualRead -ge 1048576 ]
+			then
+			echo -n $((actualRead/1048576));
+			echo -n " MB/s              ";
+			else 
+			echo -n "$actualRead B/s                ";
+		fi;
+		printf '\n\n\n';
+		
+		for j in {0..10}
+			do
+			for (( i = counter2 ; i >= shift2 ; i--))
+				do
+				if [ ${arrayWrite[$i]} -gt $((9-j)) ]
+					then
+					echo -n "|"
+				else
+					echo -n '.';
+				fi
+				done
+			echo '';
+			done
+		counter2=$[counter2+1];
+		echo "1   5   10   15   20   25   30   35   40   45   50   55   60";	
+		
+		echo -n "Actual write speed: ";
+		
+		actualWrite=$(tac logWrite.txt | head -n 60 | tail -n 60 | head -n 1);
+		
+	    if [ $actualWrite -ge 1024 ] && [ $actualWrite -lt 1048576 ]
+			then
+			echo -n $((actualWrite/1024));
+			echo -n " KB/s                ";
+			elif [ $actualWrite -ge 1048576 ]
+			then
+			echo -n $((actualWrite/1048576));
+			echo -n " MB/s              ";
+			else 
+			echo -n "$actualWrite B/s                ";
+		fi;
+			
+	fi
+	
+	tput cup 0 60;
+	if [ $maxRead -ge 1024 ] && [ $maxRead -lt 1048576 ]
+		then
+		echo -n $((maxRead/1024));
+		echo -n "KB/s                   ";
+		elif [ $maxRead -ge 1048576 ]
+		then
+		echo -n $((maxRead/1048576));
+		echo -n "MB/s                 ";
+		else 
+		echo -n "$maxRead B/s      ";
+	fi;
+	tput cup 15 60;
+	if [ $maxWrite -ge 1024 ] && [ $maxWrite -lt 1048576 ]
+		then
+		echo -n $((maxWrite/1024));
+		echo -n "KB/s                ";
+		elif [ $maxWrite -ge 1048576 ]
+		then
+		echo -n $((maxWrite/1048576));
+		echo -n "MB/s                 ";
+		else 
+		echo -n "$maxWrite B/s     ";
+	fi;
+	
+	if [ "$flag" = true ]
+		then
+		sleep 1;
+	fi
+	flag=true;
+	
+done
